@@ -1,0 +1,7 @@
+<div>
+  <label for="type"> New VM </label>
+  <select class="form-control" id="type" required [(ngModel)]="key" name="type">
+    <option *ngFor="let k of keys" [value]="types[k]">{{types[k]}}</option>
+  </select>
+  <button (click)="createVM()">Create</button>
+</div>

@@ -1,5 +1,4 @@
 <p class="error">{{errorMessage}}</p>
-<p class="success">{{successMessage}}</p>
 
 <button *ngIf="!(authState | async)" (click)="tryLogin()" class="btn btn-default">Login</button>
 <button *ngIf="authState | async" (click)="signOut()" class="btn btn-default">Sign Out</button>

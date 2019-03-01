@@ -1,0 +1,13 @@
+<h3> User VMs </h3>
+<div *ngFor="let vm of (vms | async)">
+  <pre>
+    {{ stringify(vm) }}
+  </pre>
+  <div class="actions">
+    <button *ngIf="!vm.running" (click)="start(vm)">Start</button>
+    <button *ngIf="vm.running" (click)="stop(vm)">Stop</button>
+    <button *ngIf="vm.type < 3" (click)="upgrade(vm)">Upgrade</button>
+    <button *ngIf="vm.type > 1" (click)="downgrade(vm)">Downgrade</button>
+    <button (click)="delete(vm)">Delete</button>
+  </div>
+</div>

@@ -13,13 +13,15 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import { VmManagerComponent } from './vm-manager/vm-manager.component';
 import { NewVMFormComponent } from './new-vm-form/new-vm-form.component';
+import { VMListComponent } from './vm-list/vm-list.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     VmManagerComponent,
-    NewVMFormComponent
+    NewVMFormComponent,
+    VMListComponent
   ],
   imports: [
     BrowserModule,

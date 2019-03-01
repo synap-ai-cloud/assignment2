@@ -20,10 +20,7 @@ export class NewVMFormComponent implements OnInit {
   }
 
   createVM() {
-    const promise = this.vmService.createVM(this.types[this.key] as VMType);
-    promise
-      .then( id => console.log(id))
-      .catch(err => console.log(err));
+    this.vmService.create(this.types[this.key] as VMType);
   }
 
 }

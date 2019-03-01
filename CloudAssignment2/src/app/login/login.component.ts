@@ -12,7 +12,6 @@ export class LoginComponent implements OnInit {
   authState = this.authService.authState;
 
   errorMessage: string;
-  successMessage: string;
 
   constructor(private authService: AuthService) { }
 
@@ -23,17 +22,14 @@ export class LoginComponent implements OnInit {
     this.authService.loginWithPopUp()
       .then( res => {
         this.errorMessage = '';
-        this.successMessage = 'success';
       }, err => {
         this.errorMessage = err.message;
-        this.successMessage = '';
       });
   }
 
   signOut() {
     this.authService.signOut()
       .then( () => {
-        this.successMessage = '';
         this.errorMessage = '';
       });
   }

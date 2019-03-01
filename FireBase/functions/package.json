@@ -9,7 +9,7 @@
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log"
   },
-  "main": "lib/FireBaseFunctions/functions/src/index.js",
+  "main": "lib/FireBase/functions/src/index.js",
   "dependencies": {
     "@google-cloud/firestore": "^1.0.1",
     "firebase-admin": "~7.0.0",

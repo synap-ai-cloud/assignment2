@@ -2,7 +2,7 @@ import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { VIMEvent } from '../../../CloudAssignment2/src/app/classes/vim-event';
 import { VM } from '../../../CloudAssignment2/src/app/classes/vm';
-import { CollectionReference, UpdateData } from '@google-cloud/firestore';
+import { CollectionReference, UpdateData, DocumentReference } from '@google-cloud/firestore';
 import { EventType } from '../../../CloudAssignment2/src/app/enumerations/event-type.enum';
 import { VMType } from '../../../CloudAssignment2/src/app/enumerations/vm-type.enum';
 
@@ -12,6 +12,7 @@ const firestore = admin.firestore();
 // // https://firebase.google.com/docs/functions/typescript
 
 export const postEvent = functions.https.onCall(async (data, context) => {
+  //Make sure request is from authenticated user
   if (!context.auth) {
     throw new functions.https.HttpsError(
       'unauthenticated',
@@ -21,7 +22,8 @@ export const postEvent = functions.https.onCall(async (data, context) => {
 
   const event = data.event as VIMEvent;
 
-  if (
+  //Ensure function has been passed an event at it has a vailid type
+  if ( 
     !event ||
     !event.type ||
     event.type > EventType.Downgrade ||
@@ -32,7 +34,7 @@ export const postEvent = functions.https.onCall(async (data, context) => {
       'Event could not be parsed'
     );
   }
-
+  // attach uid from auth to event uid
   const uid = context.auth.uid;
   event.cc_id = uid;
 
@@ -45,21 +47,37 @@ export const postEvent = functions.https.onCall(async (data, context) => {
 
   const vmRef = docRef.collection('vms');
 
-  const success = await handleEvent(event, vmRef);
+  // Process the event and get ref to affected doc
+  const vmDoc = await handleEvent(event, vmRef);
 
-  if (!success) {
+  if (!vmDoc) {
     throw new functions.https.HttpsError(
       'invalid-argument',
       'Event could not be procesed'
     );
   }
 
+  //Ensure all event fields are filled in
+  if(event.type !== EventType.Delete) {
+    const vmSnap = await getVM(vmDoc.id, vmRef);
+    if (!vmSnap) {
+      throw new functions.https.HttpsError(
+        'internal',
+        'VM instance could not be found after write'
+      );
+    }
+    event.vm_id = vmDoc.id;
+    event.vm_type = vmSnap.type;
+  }
   event.timestamp = Date.now();
+
+  // write event
   const result = await docRef.collection('events').add(event);
+  //return the id of the written event
   return result.id;
 });
 
-async function handleEvent(event: VIMEvent, vmRef: CollectionReference): Promise<string | null> {
+async function handleEvent(event: VIMEvent, vmRef: CollectionReference): Promise<DocumentReference | null> {
   switch (event.type) {
     case EventType.Create:
       return createVM(event, vmRef);
@@ -91,7 +109,7 @@ async function createVM(event: VIMEvent, vmRef: CollectionReference) {
 
   const newVm: VM = { type: vmType, running: false };
   const result = await vmRef.add(newVm);
-  return result.id;
+  return result;
 }
 
 async function deleteVM(event: VIMEvent, vmRef: CollectionReference) {
@@ -101,43 +119,91 @@ async function deleteVM(event: VIMEvent, vmRef: CollectionReference) {
     return null;
   }
 
+  // prefill event before data is lost
+  const vm = await getVM(vmId, vmRef);
+  if (!vm) {
+    return null;
+  }
+  event.vm_type = vm.type;
+
   const doc = vmRef.doc(vmId);
   const result = await doc.delete();
-  return result ? doc.id : null;
+  return result ? doc : null;
 }
 
 async function startVM(event: VIMEvent, vmRef: CollectionReference) {
-  return updateVM(event, vmRef, { running: true });
+  const vmID = getVMID(event);
+
+  if (!vmID) {
+    return null;
+  }
+
+  const vm = await getVM(vmID, vmRef);
+
+  if (!vm || vm.running !== false) {
+    throw new functions.https.HttpsError(
+      'invalid-argument',
+      'Current VM: ' + ((vm) ? vm.toString() : 'null')
+    );
+  }
+
+  return updateVM(vmID, vmRef, { running: true });
 }
 
 async function stopVM(event: VIMEvent, vmRef: CollectionReference) {
-  return updateVM(event, vmRef, { running: false });
+  const vmID = getVMID(event);
+
+  if (!vmID) {
+    return null;
+  }
+
+  const vm = await getVM(vmID, vmRef);
+
+  if (!vm || vm.running !== true) {
+    throw new functions.https.HttpsError(
+      'invalid-argument',
+      'Current VM: ' + ((vm) ? vm.toString() : 'null')
+    );
+  }
+  return updateVM(vmID, vmRef, { running: false });
 }
 
 async function upgradeVM(event: VIMEvent, vmRef: CollectionReference) {
-  const vmType = await getVMType(event, vmRef);
+  const vmID = getVMID(event);
 
-  if (!vmType || vmType >= VMType.UltraLarge) {
+  if (!vmID) {
+    return null;
+  }
+
+  const vm = await getVM(vmID, vmRef);
+
+  if (!vm || !vm.type || vm.type >= VMType.UltraLarge) {
     throw new functions.https.HttpsError(
       'invalid-argument',
-      'Bad VM Type: ' + ((vmType) ? vmType.toString() : 'null')
+      'Current VM: ' + ((vm) ? vm.toString() : 'null')
     );
   }
 
-  return updateVM(event, vmRef, { type: vmType + 1 });
+  return updateVM(vmID, vmRef, { type: vm.type + 1 });
 }
 
 async function downgradeVM(event: VIMEvent, vmRef: CollectionReference) {
-  const vmType = await getVMType(event, vmRef);
+  const vmID = getVMID(event);
 
-  if (!vmType || vmType <= VMType.Basic) {
+  if (!vmID) {
+    return null;
+  }
+
+  const vm = await getVM(vmID, vmRef);
+
+  if (!vm || !vm.type || vm.type <= VMType.Basic) {
     throw new functions.https.HttpsError(
       'invalid-argument',
-      'Bad VM Type: ' + ((vmType) ? vmType.toString() : 'null')
+      'Current VM: ' + ((vm) ? vm.toString() : 'null')
     );
   }
 
-  return updateVM(event, vmRef, { type: vmType - 1 });
+  return updateVM(vmID, vmRef, { type: vm.type - 1 });
 }
 
 function getVMID(event: VIMEvent) {
@@ -149,8 +215,7 @@ function getVMID(event: VIMEvent) {
   }
 }
 
-async function getVMType(event: VIMEvent, vmRef: CollectionReference) {
-  const vmId = getVMID(event);
+async function getVM(vmId: string, vmRef: CollectionReference) {
 
   if (!vmId) {
     return null;
@@ -165,21 +230,16 @@ async function getVMType(event: VIMEvent, vmRef: CollectionReference) {
 
   const vm = snap.data() as VM;
 
-  return vm.type;
+  return vm;
 }
 
 async function updateVM(
-  event: VIMEvent,
+  vmId: string,
   vmRef: CollectionReference,
   update: UpdateData
 ) {
-  const vmId = getVMID(event);
-
-  if (!vmId) {
-    return null;
-  }
 
   const doc = vmRef.doc(vmId);
   const result = await doc.update(update);
-  return result ? doc.id : null;
+  return result ? doc : null;
 }

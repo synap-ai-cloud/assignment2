@@ -15,12 +15,12 @@ import { map, switchMap } from 'rxjs/operators';
 export class VMService {
 
   vms: Observable<VM[]>;
-
   events: Observable<VIMEvent[]>;
 
   private postEvent = this.fns.httpsCallable('postEvent');
 
   constructor(private authService: AuthService, private fns: AngularFireFunctions, private afs: AngularFirestore) {
+    var usage;
     const userData = authService.user.pipe(
       switchMap(u => {
         if (u) {

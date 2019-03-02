@@ -1,4 +1,5 @@
 <p class="error">{{errorMessage}}</p>
-
-<button *ngIf="!(authState | async)" (click)="tryLogin()" class="btn btn-default">Login</button>
-<button *ngIf="authState | async" (click)="signOut()" class="btn btn-default">Sign Out</button>
+<div style="text-align:center; font-size:30px; padding-top:50px">
+    <button mat-button *ngIf="!(authState | async)" (click)="tryLogin()" class="btn btn-default">Login</button>
+    <button style="float:right; margin-right:50px" mat-button *ngIf="authState | async" (click)="signOut()" class="btn btn-default">Sign Out</button>
+</div>

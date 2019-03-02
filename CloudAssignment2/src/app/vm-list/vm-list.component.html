@@ -1,13 +1,20 @@
-<h3> User VMs </h3>
-<div *ngFor="let vm of (vms | async)">
-  <pre>
-    {{ stringify(vm) }}
-  </pre>
-  <div class="actions">
-    <button *ngIf="!vm.running" (click)="start(vm)">Start</button>
-    <button *ngIf="vm.running" (click)="stop(vm)">Stop</button>
-    <button *ngIf="vm.type < 3" (click)="upgrade(vm)">Upgrade</button>
-    <button *ngIf="vm.type > 1" (click)="downgrade(vm)">Downgrade</button>
-    <button (click)="delete(vm)">Delete</button>
+<div style="margin-left:50px">
+  <h1 style="font-family:'Roboto',sans-serif"> User VMs </h1>
+  <div *ngFor="let vm of (vms | async)">
+    <mat-card>
+      <pre style="font-family:'Roboto',sans-serif">
+        <strong>id:</strong> {{ parse(stringify(vm)).id }}<br>
+        <strong>Running:</strong> {{ parse(stringify(vm)).running }}<br>
+        <strong>Type:</strong> {{ parse(stringify(vm)).type }}
+      </pre>
+      <div class="actions">
+        <button mat-button style="margin-right:10px; background-color:rgb(96, 166, 223)"  *ngIf="!vm.running" (click)="start(vm)">Start</button>
+        <button mat-button style="margin-right:10px; background-color:rgb(96, 166, 223)" *ngIf="vm.running" (click)="stop(vm)">Stop</button>
+        <button mat-button style="margin-right:10px" *ngIf="vm.type < 3" (click)="upgrade(vm)">Upgrade</button>
+        <button mat-button style="margin-right:10px" *ngIf="vm.type > 1" (click)="downgrade(vm)">Downgrade</button>
+        <button mat-button style="background-color:rgb(223, 35, 72)" (click)="delete(vm)">Delete</button>
+      </div>
+    </mat-card>
+    <mat-divider></mat-divider>
   </div>
 </div>

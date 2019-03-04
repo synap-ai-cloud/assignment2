@@ -16,6 +16,7 @@ export class VMListComponent implements OnInit {
   }
 
   stringify = JSON.stringify;
+  parse = JSON.parse;
 
   constructor(private vmService: VMService) { }
 

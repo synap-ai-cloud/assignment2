@@ -1,7 +1,11 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-
+import {MatButtonModule, MatCheckboxModule,MatCardModule,MatDividerModule,MatOptionModule, MatFormField} from '@angular/material';
+import {MatIconModule} from '@angular/material/icon';
+import {MatSelectModule} from '@angular/material/select';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 // Firebase
 import { AngularFireModule } from '@angular/fire';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
@@ -30,6 +34,15 @@ import { VMListComponent } from './vm-list/vm-list.component';
     AngularFirestoreModule,
     AngularFireAuthModule,
     AngularFireFunctionsModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatCardModule,
+    MatDividerModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatOptionModule,
+    BrowserAnimationsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

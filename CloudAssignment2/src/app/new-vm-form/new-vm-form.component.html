@@ -1,7 +1,10 @@
-<div>
-  <label for="type"> New VM </label>
-  <select class="form-control" id="type" required [(ngModel)]="key" name="type">
-    <option *ngFor="let k of keys" [value]="types[k]">{{types[k]}}</option>
-  </select>
-  <button (click)="createVM()">Create</button>
-</div>
+<mat-card style="margin-left:50px">
+  <h1 style="font-family:'Roboto',sans-serif">Create New</h1>
+  <label for="type" style="font-family:'Roboto',sans-serif;margin-right:10px"> New VM: </label>
+  <mat-form-field>
+    <mat-select class="form-control" id="type" required [(ngModel)]="key" name="type">
+      <mat-option *ngFor="let k of keys" [value]="types[k]">{{types[k]}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <button mat-button style="margin-left:20px" (click)="createVM()">Create</button>
+</mat-card>

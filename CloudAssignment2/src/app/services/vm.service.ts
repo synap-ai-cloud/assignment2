@@ -20,7 +20,6 @@ export class VMService {
   private postEvent = this.fns.httpsCallable('postEvent');
 
   constructor(private authService: AuthService, private fns: AngularFireFunctions, private afs: AngularFirestore) {
-    var usage;
     const userData = authService.user.pipe(
       switchMap(u => {
         if (u) {
@@ -47,11 +46,14 @@ export class VMService {
     });
 
     const eventsColection = userData.pipe(
-      map(ud => ud.collection<VIMEvent>('vms'))
+      map(ud => ud.collection<VIMEvent>('events'))
     );
-    eventsColection.subscribe(c => {
-      this.events = c.valueChanges();
-    });
+    this.events = eventsColection.pipe(
+      switchMap(c => c ? c.valueChanges() : empty())
+    );
+    // eventsColection.subscribe(c => {
+    //   this.events = c.valueChanges();
+    // });
 
    }
 

@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { VMService } from '../services/vm.service';
-import { map } from 'rxjs/operators';
-import { of } from 'rxjs';
 import { VM } from '../classes/vm';
 import { VMType } from '../enumerations/vm-type.enum';
 

@@ -1,20 +1,27 @@
-<div style="margin-left:50px">
-  <h1 style="font-family:'Roboto',sans-serif"> User VMs </h1>
+<div style="margin-left:50px; font-family:'Roboto',sans-serif" >
+  <h1> User VMs </h1>
   <div *ngFor="let vm of (vms | async)">
     <mat-card>
-      <pre style="font-family:'Roboto',sans-serif">
-        <strong>id:</strong> {{ parse(stringify(vm)).id }}<br>
-        <strong>Running:</strong> {{ parse(stringify(vm)).running }}<br>
-        <strong>Type:</strong> {{ parse(stringify(vm)).type }}
-      </pre>
-      <div class="actions">
-        <button mat-button style="margin-right:10px; background-color:rgb(96, 166, 223)"  *ngIf="!vm.running" (click)="start(vm)">Start</button>
-        <button mat-button style="margin-right:10px; background-color:rgb(96, 166, 223)" *ngIf="vm.running" (click)="stop(vm)">Stop</button>
-        <button mat-button style="margin-right:10px" *ngIf="vm.type < 3" (click)="upgrade(vm)">Upgrade</button>
-        <button mat-button style="margin-right:10px" *ngIf="vm.type > 1" (click)="downgrade(vm)">Downgrade</button>
-        <button mat-button style="background-color:rgb(223, 35, 72)" (click)="delete(vm)">Delete</button>
-      </div>
+      <mat-card-title>
+        <ng-container *ngTemplateOutlet="serverIcon"></ng-container>
+          <strong>VM:</strong> {{ vm.id }}
+      </mat-card-title>
+      <mat-card-content>
+        <strong>Running:</strong> {{ vm.running }}<br>
+        <strong>Type:</strong> {{ types[vm.type] }}
+      </mat-card-content>
+      <mat-card-actions>
+          <button mat-button style="margin-right:10px; background-color:rgb(96, 166, 223)" *ngIf="!vm.running" (click)="start(vm)">Start</button>
+          <button mat-button style="margin-right:10px; background-color:rgb(96, 166, 223)" *ngIf="vm.running" (click)="stop(vm)">Stop</button>
+          <button mat-button style="margin-right:10px; background-color: darkturquoise" *ngIf="vm.type < 3" (click)="upgrade(vm)">Upgrade</button>
+          <button mat-button style="margin-right:10px; background-color: lightgrey" *ngIf="vm.type > 1" (click)="downgrade(vm)">Downgrade</button>
+          <button mat-button style="background-color:rgb(223, 35, 72)" (click)="delete(vm)">Delete</button>
+      </mat-card-actions>
     </mat-card>
     <mat-divider></mat-divider>
   </div>
 </div>
+
+<ng-template #serverIcon>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAHnSURBVGhD7dk9Sx1BGMXxGw2iBt/KIBEjlikCwdLCMoi1WAspIxFBv4AWCoFgwCgiCIZU6SwSv4KxSiohhBSiTUQREt/1f24YkMtdZNxn544wB37FjuzdPSsz7EvJM61YxhGuCnCJbbxBYWnGFqqdQBHGYZ4H+AQd4AeeoKiMQP+Zc7zUgGUmUHnFQjhAL0zyEP+gq7QfkJuH72GSNrirEzKD0HE/lrcMkorkTNAiDegw0I7KBCsyiRPobxZ+4RlcghR5BK3zF6i24vhyK9QqXIIU6YLGfpe38sed9Hp5639SkaykIh6pWRHdNGpsBz0GRlGTIvU4hMYtvYVLkCJ6NjnFGX4a2IWOsQKXNEeykop4JBXxSbUibvnVJH1hYAw1KaLHX93sadzSHFyCFFEGsIFvBjaxhJvPJcGKFJ1UJCupSM6kIllJRYhefj/H4/KWX6IpohKfoX2PMQSfRFOkG9rP+QqfRFNE777+wBV5B59ENUf6oBOZQYsGPBJVkTxJRbKSp4hu9/txl89n0RSpwxdoX71tGYZPoinyFNrPubfLbxP24IrMwidRzRF9uPmAKTRqwCNRFcmTVCQrqUjOmBfRPZJ+8C9eBTQPHXcNZvkO/WgtvIZZOjGNxYAWoC9Z+qh0S0qla+4mF+l+zBQYAAAAAElFTkSuQmCC">
+</ng-template>

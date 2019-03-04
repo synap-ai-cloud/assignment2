@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {MatButtonModule, MatCheckboxModule,MatCardModule,MatDividerModule,MatOptionModule, MatFormField} from '@angular/material';
+import {MatButtonModule, MatCheckboxModule, MatCardModule, MatDividerModule, MatOptionModule, MatFormField} from '@angular/material';
 import {MatIconModule} from '@angular/material/icon';
 import {MatSelectModule} from '@angular/material/select';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -42,7 +42,7 @@ import { VMListComponent } from './vm-list/vm-list.component';
     MatFormFieldModule,
     MatSelectModule,
     MatOptionModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

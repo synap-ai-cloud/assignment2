@@ -3,6 +3,7 @@ import { VMService } from '../services/vm.service';
 import { map } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { VM } from '../classes/vm';
+import { VMType } from '../enumerations/vm-type.enum';
 
 @Component({
   selector: 'app-vm-list',
@@ -15,8 +16,7 @@ export class VMListComponent implements OnInit {
     return this.vmService.vms;
   }
 
-  stringify = JSON.stringify;
-  parse = JSON.parse;
+  types = VMType;
 
   constructor(private vmService: VMService) { }
 

@@ -3,6 +3,15 @@
   <pre>
     {{ stringify(vm) }}
   </pre>
+  <div *ngFor="let event of (events | async)">
+    {{ stringify(event) }}
+  </div>
+  <div>{{ test }}</div>
+  <div>{{ test2 }}</div>
+  <div>{{ test3 }}</div>
+  <div>{{ subtest }}</div>
+  <div>{{ etest }}</div>
+  
   <div class="actions">
     <button *ngIf="!vm.running" (click)="start(vm)">Start</button>
     <button *ngIf="vm.running" (click)="stop(vm)">Stop</button>

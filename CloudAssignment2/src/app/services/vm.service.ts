@@ -47,10 +47,18 @@ export class VMService {
     });
 
     const eventsColection = userData.pipe(
-      map(ud => ud.collection<VIMEvent>('vms'))
+      map(ud => ud.collection<VIMEvent>('events'))
     );
     eventsColection.subscribe(c => {
-      this.events = c.valueChanges();
+      this.events = c.snapshotChanges().pipe(
+        map(changes => {
+          return changes.map(change => {
+            const data = change.payload.doc.data();
+            const id = change.payload.doc.id;
+            return { id, ... data};
+          });
+        })
+      );
     });
 
    }

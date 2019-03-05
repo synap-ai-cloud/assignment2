@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { VMService } from '../services/vm.service';
-import { Observable, interval, of } from 'rxjs';
+import { Observable, interval, of, combineLatest } from 'rxjs';
 import { UsagePeriod } from '../classes/usage-period';
 import { VIMEvent } from '../classes/vim-event';
 import { map, groupBy, mergeMap } from 'rxjs/operators';
@@ -15,6 +15,7 @@ import { EventType } from '../enumerations/event-type.enum';
 export class UsageComponent implements OnInit {
 
   usagePeriods: Observable<UsagePeriod[]>;
+  totalCost: Observable<number>;
   types = VMType;
 
   now = interval(1000).pipe(map(() => Date.now()));
@@ -32,12 +33,24 @@ export class UsageComponent implements OnInit {
     this.usagePeriods = this.vmService.events.pipe(
       map(this.usageCalc)
     );
+
+    this.totalCost = combineLatest(this.usagePeriods, this.now, (ups, now) => {
+      let totalCost = 0;
+      ups.forEach(up => {
+        const start = up.startEvent.timestamp;
+        const type = up.startEvent.type;
+        const end = up.endEvent ? up.endEvent.timestamp : now;
+        const charge = this.getCharge(start, end, type);
+        totalCost += charge;
+      });
+      return totalCost;
+    });
   }
 
-  getCharge(start: number, end: number, type: number): string {
+  getCharge(start: number, end: number, type: number): number {
     const timespan = end - start; // time stamp in ms
     const charge = type * 0.05 * timespan / 60000;
-    return charge.toFixed(2);
+    return charge;
   }
 
   usageCalc(events: VIMEvent[]): UsagePeriod[] {

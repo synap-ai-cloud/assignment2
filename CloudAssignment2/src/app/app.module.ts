@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {MatButtonModule, MatCheckboxModule, MatCardModule, MatDividerModule, MatOptionModule, MatFormField} from '@angular/material';
+import {MatButtonModule, MatCheckboxModule, MatCardModule, MatDividerModule, MatOptionModule, MatTableModule} from '@angular/material';
 import {MatIconModule} from '@angular/material/icon';
 import {MatSelectModule} from '@angular/material/select';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -19,6 +19,7 @@ import { VmManagerComponent } from './vm-manager/vm-manager.component';
 import { NewVMFormComponent } from './new-vm-form/new-vm-form.component';
 import { VMListComponent } from './vm-list/vm-list.component';
 import { UsageComponent } from './usage/usage.component';
+import { EventsComponent } from './events/events.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { UsageComponent } from './usage/usage.component';
     VmManagerComponent,
     NewVMFormComponent,
     VMListComponent,
-    UsageComponent
+    UsageComponent,
+    EventsComponent
   ],
   imports: [
     BrowserModule,
@@ -44,6 +46,7 @@ import { UsageComponent } from './usage/usage.component';
     MatFormFieldModule,
     MatSelectModule,
     MatOptionModule,
+    MatTableModule,
     BrowserAnimationsModule,
   ],
   providers: [],
